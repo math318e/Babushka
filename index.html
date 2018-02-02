@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+</head>
+
+<header>
+    <img src="imgs/red_star.svg" alt="">
+    <h1>Bistro Babushka</h1>
+</header>
+
+<body>
+    <template class="rettertemplate">
+    <div class="retter">
+        <h2 class="navn"></h2>
+        <img class="billede"src="" alt="">
+        <h3 class="kortbeskrivelse"></h3>
+        <p class="langbeskrivelse"></p>
+        <p class="pris">kr.</p>
+        </div>
+    </template>
+    <div class="liste"></div>
+
+    <footer>
+        <section><address>Adresse: <br>Grønnegade 97<br>1234 København K</address>
+            <aside>Åbningstider: <br> Mandag - fredag 10:30 - 22:00 <br> Lørdag 12:00 - 23:00</aside>
+        </section>
+    </footer>
+    <script>
+        let retter;
+        async function hentJson() {
+            let jsonData = await fetch("json/menu.json");
+            retter = await jsonData.json();
+            vis(retter);
+        }
+
+        document.addEventListener("DOMContentLoaded", hentJson);
+
+
+        function vis(retter) {
+            let temp = document.querySelector(".rettertemplate");
+            let dest = document.querySelector(".liste");
+            retter.forEach(ret => {
+                let klon = temp.cloneNode(true).content;
+                klon.querySelector(".navn").textContent = ret.navn;
+                klon.querySelector(".billede").setAttribute("src", "imgs/small/" + ret.billede + "-sm.jpg");
+                klon.querySelector(".billede").alt = "billede af" + ret.navn;
+                klon.querySelector(".kortbeskrivelse").textContent = ret.kortbeskrivelse;
+                klon.querySelector(".langbeskrivelse").textContent = ret.langbeskrivelse;
+                klon.querySelector(".pris").textContent = ret.pris;
+                dest.appendChild(klon);
+
+            });
+        };
+    </script>
+
+    <style>
+        .liste {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            margin: 0 auto;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        div {
+            margin: 2px;
+        }
+
+        .kortbeskrivelse {
+            font-size: 1.2em;
+        }
+
+        .navn {
+            font-size: 1.7em;
+            text-align: center;
+        }
+    </style>
+
+</body>
+
+</html>

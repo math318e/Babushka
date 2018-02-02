@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+</head>
+
+<header>
+    <h1>Bistro</h1>
+</header>
+<main>
+    <h1 id="overskrift" data-overskrift></h1>
+    <section id="menu-container" data-container></section>
+</main>
+
+<nav>
+    <button id="filter-alle">Alle</button>
+    <button id="filter-forretter">Forretter</button>
+    <button id="filter-hovedretter">Hovedretter</button>
+    <button id="filter-desserter">Desserter</button>
+    <button id="filter-drikkevarer">Drikkevarer</button>
+</nav>
+
+<body>
+    <template class="rettertemplate">
+    <div class="retter">
+        <h2 class="navn"></h2>
+        <img class="billede"src="" alt="">
+        <h3 class="kortbeskrivelse"></h3>
+        <p class="langbeskrivelse"></p>
+        <p class="pris">kr.</p>
+        </div>
+    </template>
+    <div class="liste"></div>
+
+    <footer>
+        <section><address>Adresse: <br>Grønnegade 97<br>1234 København K</address>
+            <aside>Åbningstider: <br> Mandag - fredag 10:30 - 22:00 <br> Lørdag 12:00 - 23:00</aside>
+        </section>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", hentJson);
+
+        let retter;
+        async function hentJson() {
+            let jsonData = await fetch("json/menu.json");
+            retter = await jsonData.json();
+            visRetter(retter, "Menu");
+            lavFiltre();
+        }
+
+        function visRetter(retter, overskrift) {
+            let temp = document.querySelector(".rettertemplate");
+            let dest = document.querySelector(".liste");
+            console.log(retter);
+            dest.innerHTML = "";
+            document.querySelector("#overskrift").textContent = overskrift;
+            retter.forEach(ret => {
+                let klon = temp.cloneNode(true).content;
+                klon.querySelector(".navn").textContent = ret.navn;
+                klon.querySelector(".billede").setAttribute("src", "imgs/small/" + ret.billede + "-sm.jpg");
+                klon.querySelector(".billede").alt = "billede af" + ret.navn;
+                klon.querySelector(".kortbeskrivelse").textContent = ret.kortbeskrivelse;
+                klon.querySelector(".langbeskrivelse").textContent = ret.langbeskrivelse;
+                klon.querySelector(".pris").textContent = ret.pris;
+                dest.appendChild(klon);
+
+            });
+        };
+
+        function lavFiltre() {
+            let forretter = retter.filter(ret => ret.kategori == "forretter");
+            let hovedretter = retter.filter(ret => ret.kategori == "hovedretter");
+            let desserter = retter.filter(ret => ret.kategori == "desserter");
+            let drikkevarer = retter.filter(ret => ret.kategori == "drikkevarer");
+
+            document.querySelector('#filter-alle').addEventListener("click", () => {
+                visRetter(retter, "Menu");
+            });
+            document.querySelector('#filter-forretter').addEventListener("click", () => {
+                visRetter(forretter, "Forretter");
+            });
+            document.querySelector('#filter-hovedretter').addEventListener("click", () => {
+                visRetter(hovedretter, "Hovedretter");
+            });
+            document.querySelector('#filter-desserter').addEventListener("click", () => {
+                visRetter(desserter, "Desserter");
+            });
+            document.querySelector('#filter-drikkevarer').addEventListener("click", () => {
+                visRetter(drikkevarer, "Drikkevarer");
+            });
+        }
+    </script>
+
+    <style>
+        .liste {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            margin: 0 auto;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        div {
+            margin: 2px;
+        }
+
+        .kortbeskrivelse {
+            font-size: 1.2em;
+        }
+
+        .navn {
+            font-size: 1.7em;
+            text-align: center;
+        }
+    </style>
+
+</body>
+
+</html>
